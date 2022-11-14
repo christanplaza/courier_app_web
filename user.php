@@ -14,7 +14,7 @@ class User
         $this->db = new DbConnect();
     }
 
-    public function isLoginExist($username, $password)
+    public function getUserInfo($username, $password)
     {
 
         $query = "select * from " . $this->db_table . " where username = '$username' AND password = '$password' Limit 1";
@@ -22,16 +22,22 @@ class User
         $result = mysqli_query($this->db->getDb(), $query);
 
         if (mysqli_num_rows($result) > 0) {
+            $user_row = mysqli_fetch_all($result, MYSQLI_ASSOC)[0];
+
+            $user = [
+                'id' => $user_row['id'],
+                'username' => $user_row['username'],
+                'email' => $user_row['email']
+            ];
 
             mysqli_close($this->db->getDb());
 
-
-            return true;
+            return $user;
         }
 
         mysqli_close($this->db->getDb());
 
-        return false;
+        return null;
     }
 
     public function isEmailUsernameExist($username, $email)
@@ -99,15 +105,16 @@ class User
 
         $json = array();
 
-        $canUserLogin = $this->isLoginExist($username, $password);
+        $user = $this->getUserInfo($username, $password);
 
-        if ($canUserLogin) {
 
+        if ($user != null) {
             $json['success'] = 1;
             $json['message'] = "Successfully logged in";
+            $json['user'] = $user;
         } else {
             $json['success'] = 0;
-            $json['message'] = "Incorrect details";
+            $json['message'] = "Username/Password is incorrect.";
         }
         return $json;
     }
