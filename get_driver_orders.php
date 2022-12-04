@@ -1,15 +1,10 @@
 <?php
 
-if (!empty($_POST['description']) && !empty($_POST['pickup_address']) && !empty($_POST['address']) && !empty($_POST['note']) && !empty($_POST['email']) && !empty($_POST['userKey'])) {
+if (!empty($_POST['email']) && !empty($_POST['userKey'])) {
     $conn = mysqli_connect('localhost', 'root', '', 'courier_app');
 
     $email = $_POST['email'];
-    $description = $_POST['description'];
-    $pickup_address = $_POST['pickup_address'];
-    $address = $_POST['address'];
-    $note = $_POST['note'];
     $userKey = $_POST['userKey'];
-    $status = 'Pending';
 
     if ($conn) {
         $sql = "SELECT * FROM users WHERE email = '$email' AND userKey = '$userKey'";
@@ -17,12 +12,14 @@ if (!empty($_POST['description']) && !empty($_POST['pickup_address']) && !empty(
         $res = mysqli_query($conn, $sql);
         if (mysqli_num_rows($res) != 0) {
             $user = mysqli_fetch_assoc($res);
-            $customer_id = $user['id'];
+            $driverID = $user['id'];
 
-            $sql = "INSERT INTO job_orders (customer_id, description, note, status, delivery_address, pickup_address) values ('$customer_id', '$description', '$note', '$status', '$address', '$pickup_address')";
+            $sql = "SELECT `users`.name, `users`.contact_number, `job_orders`.* FROM job_orders INNER JOIN users ON `job_orders`.customer_id = `users`.id WHERE (courier_id = '$driverID') AND status = 'Ongoing'";
 
-            if (mysqli_query($conn, $sql)) {
-                $result = array("status" => "success", "message" => "Job Order Created");
+            $job_order_res = mysqli_query($conn, $sql);
+            if (mysqli_num_rows($job_order_res) != 0) {
+                $order = mysqli_fetch_assoc($job_order_res);
+                $result = array("status" => "success", "order" => $order);
             } else {
                 $result = array("status" => "failed", "message" => "Something went wrong.");
             }
@@ -37,3 +34,4 @@ if (!empty($_POST['description']) && !empty($_POST['pickup_address']) && !empty(
 }
 
 echo json_encode($result, JSON_PRETTY_PRINT);
+

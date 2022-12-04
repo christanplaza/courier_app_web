@@ -1,15 +1,10 @@
 <?php
 
-if (!empty($_POST['description']) && !empty($_POST['pickup_address']) && !empty($_POST['address']) && !empty($_POST['note']) && !empty($_POST['email']) && !empty($_POST['userKey'])) {
+if (!empty($_POST['email']) && !empty($_POST['userKey'])) {
     $conn = mysqli_connect('localhost', 'root', '', 'courier_app');
 
     $email = $_POST['email'];
-    $description = $_POST['description'];
-    $pickup_address = $_POST['pickup_address'];
-    $address = $_POST['address'];
-    $note = $_POST['note'];
     $userKey = $_POST['userKey'];
-    $status = 'Pending';
 
     if ($conn) {
         $sql = "SELECT * FROM users WHERE email = '$email' AND userKey = '$userKey'";
@@ -18,11 +13,22 @@ if (!empty($_POST['description']) && !empty($_POST['pickup_address']) && !empty(
         if (mysqli_num_rows($res) != 0) {
             $user = mysqli_fetch_assoc($res);
             $customer_id = $user['id'];
+            $data = [];
 
-            $sql = "INSERT INTO job_orders (customer_id, description, note, status, delivery_address, pickup_address) values ('$customer_id', '$description', '$note', '$status', '$address', '$pickup_address')";
+            $sql = "SELECT * FROM users WHERE role = 'driver'";
 
-            if (mysqli_query($conn, $sql)) {
-                $result = array("status" => "success", "message" => "Job Order Created");
+            $res = mysqli_query($conn, $sql);
+            if ($res) {
+                while ($row = $res->fetch_assoc()) {
+                    $driverId = $row['id'];
+                    $sql = "SELECT * FROM job_orders WHERE (courier_id = '$driverId') AND status = 'Ongoing'";
+
+                    $job_order_res = mysqli_query($conn, $sql);
+                    if (mysqli_num_rows($job_order_res) == 0) {
+                        $data[] = $row;
+                    }
+                }
+                $result = array("status" => "success", "drivers" => $data);
             } else {
                 $result = array("status" => "failed", "message" => "Something went wrong.");
             }
