@@ -15,7 +15,7 @@ if (!empty($_POST['email']) && !empty($_POST['userKey'])) {
             $customer_id = $user['id'];
             $data = [];
 
-            $sql = "SELECT * FROM job_orders WHERE customer_id = '$customer_id'";
+            $sql = "SELECT `users`.name, `users`.contact_number, `job_orders`.* FROM job_orders LEFT JOIN users ON `job_orders`.courier_id = `users`.id WHERE customer_id = '$customer_id'";
 
             $res = mysqli_query($conn, $sql);
             if ($res) {
