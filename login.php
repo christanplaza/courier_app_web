@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 if (isset($_POST['submit'])) {
     if (isset($_POST['email']) && isset($_POST['password'])) {
         $conn = mysqli_connect('localhost', 'root', '', 'courier_app');
@@ -32,11 +32,13 @@ if (isset($_POST['submit'])) {
                         setcookie("email", $email, time() + (86400), "/"); // 86400 = 1 day
                         setcookie("role", $role, time() + (86400), "/"); // 86400 = 1 day
                         setcookie("name", $name, time() + (86400), "/"); // 86400 = 1 day
+                        setcookie("contact_number", $user['contact_number'], time() + (86400), "/"); // 86400 = 1 day
+                        setcookie("id", $user['id'], time() + (86400), "/"); // 86400 = 1 day
 
                         if ($role == "admin") {
                             header('location: /courier_app_web/admin/dashboard.php');
                         } else {
-                            header('location: /courier_app_web/index.php');
+                            header('location: /courier_app_web/user/dashboard.php');
                         }
                     } else {
                         $result = array("status" => "failed", "message" => "Login failed, try again.");
@@ -72,7 +74,17 @@ if (isset($_POST['submit'])) {
             <div class="col-4">
                 <div class="card">
                     <div class="card-body text-center form-signin">
-                        <h1 class="h3 mb-3 fw-normal">Admin Panel</h1>
+                        <h1 class="h3 mb-3 fw-normal">User Login</h1>
+
+                        <?php if (isset($_SESSION['msg_type']) && isset($_SESSION['flash_message'])) : ?>
+                            <div class="alert alert-<?php echo $_SESSION["msg_type"]; ?> alert-dismissible fade show" role="alert">
+                                <?php echo $_SESSION["flash_message"]; ?>
+                            </div>
+                        <?php endif; ?>
+                        <?php
+                        unset($_SESSION['msg_type']);
+                        unset($_SESSION['flash_message']);
+                        ?>
                         <form method="POST">
                             <div class="form-floating mb-3">
                                 <input type="email" name="email" class="form-control" placeholder="johndoe27@gmail.com" required>
@@ -81,6 +93,9 @@ if (isset($_POST['submit'])) {
                             <div class="form-floating mb-3">
                                 <input type="password" name="password" class="form-control" placeholder="Password" required>
                                 <label for="password">Password</label>
+                            </div>
+                            <div class="mb-3">
+                                Don't have an account? <a href="register.php">Register Here.</a>
                             </div>
                             <button class="w-100 btn btn-lg btn-primary" type="submit" name="submit">Login</button>
                         </form>
