@@ -1,3 +1,4 @@
+<?php include_once "../check_logged_in.php"; ?>
 <?php
 session_start();
 $_SESSION["currentPage"] = "users";
@@ -119,15 +120,17 @@ if (isset($_POST['submit'])) {
                                             <input type="password" class="form-control" id="confirm_password" name="confirm_password">
                                         </div>
                                     </div>
-                                    <div class="col-6">
-                                        <div class="mb-3">
-                                            <label for="role">Role</label>
-                                            <select name="role" id="role" class="form-select" required>
-                                                <option value="driver" <?php echo $userObj['role'] == 'driver' ? 'selected' : ''; ?>>Driver</option>
-                                                <option value="admin" <?php echo $userObj['role'] == 'admin' ? 'selected' : ''; ?>>Admin</option>
-                                            </select>
+                                    <?php if ($userObj['role'] != "admin") : ?>
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label for="role">Role</label>
+                                                <select name="role" id="role" class="form-select" required>
+                                                    <option value="driver" <?php echo $userObj['role'] == 'driver' ? 'selected' : ''; ?>>Driver</option>
+                                                    <option value="admin" <?php echo $userObj['role'] == 'admin' ? 'selected' : ''; ?>>Admin</option>
+                                                </select>
+                                            </div>
                                         </div>
-                                    </div>
+                                    <?php endif; ?>
                                     <div class="col-6">
                                         <div class="mb-3">
                                             <label for="contact_number">Truck (Write '-' for admins)</label>

@@ -11,10 +11,9 @@ if (!empty($_POST['email']) && !empty($_POST['userKey'])) {
         $res = mysqli_query($conn, $sql);
         if (mysqli_num_rows($res) != 0) {
             $user = mysqli_fetch_assoc($res);
-            $customer_id = $user['id'];
             $data = [];
 
-            $sql = "SELECT `users`.name, `users`.contact_number, `job_orders`.* FROM job_orders LEFT JOIN users ON `job_orders`.courier_id = `users`.id WHERE customer_id = '$customer_id' ORDER BY date_placed DESC";
+            $sql = "SELECT c.name, c.contact_number, j.*, d.name as driverName, d.contact_number as driverNumber FROM job_orders j LEFT JOIN users c ON c.id = j.customer_id LEFT JOIN users d on d.id = j.courier_id ORDER BY date_placed DESC";
 
             $res = mysqli_query($conn, $sql);
             if ($res) {

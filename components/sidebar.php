@@ -4,7 +4,7 @@ $activePage = $_SESSION['currentPage'];
 
 <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark shadow">
     <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark min-vh-100">
-        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+        <a href="/courier_app_web/admin/dashboard.php" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
             <span class="fs-4">Courier App</span>
         </a>
         <hr>
@@ -28,10 +28,10 @@ $activePage = $_SESSION['currentPage'];
         <hr>
         <div class="dropdown">
             <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                <strong>User</strong>
+                <strong><?php echo $_COOKIE['name']; ?></strong>
             </a>
             <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-                <li><a class="dropdown-item" href="#">Sign out</a></li>
+                <li><a class="dropdown-item" href="../admin/logout.php">Sign out</a></li>
             </ul>
         </div>
     </div>

@@ -1,94 +1,263 @@
-<?php
-
-if (isset($_POST['submit'])) {
-    if (isset($_POST['email']) && isset($_POST['password'])) {
-        $conn = mysqli_connect('localhost', 'root', '', 'courier_app');
-
-        if ($conn) {
-            $email = $_POST['email'];
-            $password = md5($_POST['password']);
-
-            $sql = "SELECT * FROM users WHERE email = '$email'";
-
-            $res = mysqli_query($conn, $sql);
-
-            if (mysqli_num_rows($res) != 0) {
-                $user = mysqli_fetch_assoc($res);
-
-                if ($email == $user['email'] && $password == $user['password']) {
-                    try {
-                        $userKey = bin2hex(random_bytes(23));
-                    } catch (Exception $e) {
-                        $userKey = bin2hex(uniqid($email, true));
-                    }
-
-                    $sql = "UPDATE users SET userKey = '$userKey' WHERE email = '$email'";
-
-                    if (mysqli_query($conn, $sql)) {
-                        $role = $user['role'];
-                        $name = $user['name'];
-
-                        setcookie("userKey", $userKey, time() + (86400), "/"); // 86400 = 1 day
-                        setcookie("email", $email, time() + (86400), "/"); // 86400 = 1 day
-                        setcookie("role", $role, time() + (86400), "/"); // 86400 = 1 day
-                        setcookie("name", $name, time() + (86400), "/"); // 86400 = 1 day
-
-                        if ($role == "admin") {
-                            header('location: /courier_app_web/admin/dashboard.php');
-                        } else {
-                            header('location: /courier_app_web/home.php');
-                        }
-                    } else {
-                        $result = array("status" => "failed", "message" => "Login failed, try again.");
-                    }
-                } else {
-                    $result = array("status" => "failed", "message" => "Incorrect email/password.");
-                }
-            }
-        } else {
-            echo "Database connection failed.";
-        }
-    } else {
-        echo "All fields are required";
-    }
-}
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Courier App | Login</title>
-    <!-- CSS only -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>home</title>
+
+   <!-- swiper css link  -->
+   <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
+
+   <!-- font awesome cdn link  -->
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+   <!-- custom css file link  -->
+   <link rel="stylesheet" href="css/style.css">
+
 </head>
 
 <body>
-    <div class="container mt-4">
-        <div class="row justify-content-center">
-            <div class="col-4">
-                <div class="card">
-                    <div class="card-body text-center form-signin">
-                        <h1 class="h3 mb-3 fw-normal">Courier App</h1>
-                        <form method="POST">
-                            <div class="form-floating mb-3">
-                                <input type="email" name="email" class="form-control" placeholder="johndoe27@gmail.com" required>
-                                <label for="floatingInput">Email</label>
-                            </div>
-                            <div class="form-floating mb-3">
-                                <input type="password" name="password" class="form-control" placeholder="Password" required>
-                                <label for="password">Password</label>
-                            </div>
-                            <button class="w-100 btn btn-lg btn-primary" type="submit" name="submit">Login</button>
-                        </form>
-                    </div>
-                </div>
+
+   <!-- header section starts  -->
+
+   <section class="header">
+
+      <a href="index.php" class="logo">CF Transport</a>
+
+      <nav class="navbar">
+         <a href="index.php">home</a>
+         <a href="about.php">about</a>
+         <a href="package.php">package</a>
+         <a href="book.php">book</a>
+         <a href="login.php">admin panel</a>
+      </nav>
+
+      <div id="menu-btn" class="fas fa-bars"></div>
+
+   </section>
+
+   <!-- header section ends -->
+
+   <!-- home section starts  -->
+
+   <section class="home">
+
+      <div class="swiper home-slider">
+
+         <div class="swiper-wrapper">
+
+            <div class="swiper-slide slide" style="background:url(images/home-slide-1.jpg) no-repeat">
+               <div class="content">
+                  <span>explore, discover, travel</span>
+                  <h3>travel around the world</h3>
+                  <a href="package.php" class="btn">discover more</a>
+               </div>
             </div>
-        </div>
-    </div>
+
+            <div class="swiper-slide slide" style="background:url(images/home-slide-2.jpg) no-repeat">
+               <div class="content">
+                  <span>explore, discover, travel</span>
+                  <h3>discover the new places</h3>
+                  <a href="package.php" class="btn">discover more</a>
+               </div>
+            </div>
+
+            <div class="swiper-slide slide" style="background:url(images/home-slide-3.jpg) no-repeat">
+               <div class="content">
+                  <span>explore, discover, travel</span>
+                  <h3>make your tour worthwhile</h3>
+                  <a href="package.php" class="btn">discover more</a>
+               </div>
+            </div>
+
+         </div>
+
+         <div class="swiper-button-next"></div>
+         <div class="swiper-button-prev"></div>
+
+      </div>
+
+   </section>
+
+   <!-- home section ends -->
+
+   <!-- services section starts  -->
+
+   <section class="services">
+
+      <h1 class="heading-title"> our services </h1>
+
+      <div class="box-container">
+
+         <div class="box">
+            <img src="images/icon-2.png" alt="">
+            <h3>monitoring</h3>
+         </div>
+
+         <div class="box">
+            <img src="images/icon-3.png" alt="">
+            <h3>transport</h3>
+         </div>
+
+         <div class="box">
+            <img src="images/icon-4.png" alt="">
+            <h3>order fulfillment</h3>
+         </div>
+
+         <div class="box">
+            <img src="images/icon-5.png" alt="">
+            <h3>delivery</h3>
+         </div>
+
+
+      </div>
+
+   </section>
+
+   <!-- services section ends -->
+
+   <!-- home about section starts  -->
+
+   <section class="home-about">
+
+      <div class="image">
+         <img src="images/about-img.jpg" alt="">
+      </div>
+
+      <div class="content">
+         <h3>about us</h3>
+         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita et, recusandae nobis fugit modi quibusdam ea assumenda, nulla quisquam repellat rem aliquid sequi maxime sapiente autem ipsum? Nobis, provident voluptate?</p>
+         <a href="about.php" class="btn">read more</a>
+      </div>
+
+   </section>
+
+   <!-- home about section ends -->
+
+   <!-- home packages section starts  -->
+
+   <section class="home-packages">
+
+      <h1 class="heading-title"> our packages </h1>
+
+      <div class="box-container">
+
+         <div class="box">
+            <div class="image">
+               <img src="images/img-1.jpg" alt="">
+            </div>
+            <div class="content">
+               <h3>adventure & tour</h3>
+               <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eos, sint!</p>
+               <a href="book.php" class="btn">book now</a>
+            </div>
+         </div>
+
+         <div class="box">
+            <div class="image">
+               <img src="images/img-2.jpg" alt="">
+            </div>
+            <div class="content">
+               <h3>adventure & tour</h3>
+               <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eos, sint!</p>
+               <a href="book.php" class="btn">book now</a>
+            </div>
+         </div>
+
+         <div class="box">
+            <div class="image">
+               <img src="images/img-3.jpg" alt="">
+            </div>
+            <div class="content">
+               <h3>adventure & tour</h3>
+               <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eos, sint!</p>
+               <a href="book.php" class="btn">book now</a>
+            </div>
+         </div>
+
+      </div>
+
+      <div class="load-more"> <a href="package.php" class="btn">load more</a> </div>
+
+   </section>
+
+   <!-- home packages section ends -->
+
+   <!-- home offer section starts  -->
+
+   <section class="home-offer">
+      <div class="content">
+         <h3>our motto</h3>
+         <p>Your only logistic partner.</p>
+         <p>Your only logistic partner.</p>
+         <a href="book.php" class="btn">book now</a>
+      </div>
+   </section>
+
+   <!-- home offer section ends -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   <!-- footer section starts  -->
+
+   <section class="footer">
+
+      <div class="box-container">
+
+         <div class="box">
+            <h3>quick links</h3>
+            <a href="index.php"> <i class="fas fa-angle-right"></i> home</a>
+            <a href="about.php"> <i class="fas fa-angle-right"></i> about</a>
+            <a href="package.php"> <i class="fas fa-angle-right"></i> package</a>
+            <a href="book.php"> <i class="fas fa-angle-right"></i> book</a>
+         </div>
+
+         <div class="box">
+            <h3>contact info</h3>
+            <a href="#"> <i class="fas fa-phone"></i> 09123456789 </a>
+            <a href="#"> <i class="fas fa-phone"></i> 09987654321 </a>
+            <a href="#"> <i class="fas fa-envelope"></i> MIR4Trucking@gmail.com </a>
+            <a href="#"> <i class="fas fa-map"></i> Negros Occidental, Bacolod City - 6100 </a>
+         </div>
+
+      </div>
+
+      <div class="credit"> created by <span>Y. Carl & L. France</span> | all rights reserved! </div>
+
+   </section>
+
+   <!-- footer section ends -->
+
+
+
+
+
+
+
+
+
+   <!-- swiper js link  -->
+   <script src="https://unpkg.com/swiper@7/swiper-bundle.min.js"></script>
+
+   <!-- custom js file link  -->
+   <script src="js/script.js"></script>
+
 </body>
 
 </html>

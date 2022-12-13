@@ -1,3 +1,4 @@
+<?php include_once "../check_logged_in.php"; ?>
 <?php
 session_start();
 $_SESSION["currentPage"] = "users";

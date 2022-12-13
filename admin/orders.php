@@ -1,3 +1,4 @@
+<?php include_once "check_logged_in.php"; ?>
 <?php
 session_start();
 $_SESSION["currentPage"] = "orders";
@@ -5,9 +6,16 @@ $host = "localhost";
 $user = "root";
 $pass = "";
 $db = "courier_app";
+$optional_sql = "";
+
+if (!isset($_GET['showDelivered'])) {
+    $_GET['showDelivered'] = 'false';
+} else if (isset($_GET['showDelivered']) && $_GET['showDelivered'] == 'true') {
+    $optional_sql .= " OR status = 'Delivered'";
+}
 
 $conn = mysqli_connect($host, $user, $pass, $db);
-$query = "SELECT `users`.id AS userID, `users`.*, `job_orders`.* FROM job_orders INNER JOIN users ON `job_orders`.customer_id = `users`.id WHERE (status = 'Pending' OR status = 'Ongoing') ORDER BY date_placed";
+$query = "SELECT `users`.id AS userID, `users`.*, `job_orders`.* FROM job_orders INNER JOIN users ON `job_orders`.customer_id = `users`.id WHERE (status = 'Pending' OR status = 'Ongoing' $optional_sql) ORDER BY date_placed";
 
 $result = mysqli_query($conn, $query);
 
@@ -66,6 +74,14 @@ if (isset($_GET['delivered']) && $_GET['delivered']) {
                         <?php endif; ?>
                         <?php unset($_SESSION['msg_type']);
                         unset($_SESSION['flash_message']); ?>
+
+                        <div class="col-12 flex gap-3 mb-3">
+                            <?php if ($_GET['showDelivered'] == 'true') : ?>
+                                <a href="/courier_app_web/admin/orders.php?showDelivered=false" class="btn btn-primary" id="">Hide Delivered Records</a>
+                            <?php else : ?>
+                                <a href="/courier_app_web/admin/orders.php?showDelivered=true" class="btn btn-outline-primary" id="">Show Delivered Records</a>
+                            <?php endif ?>
+                        </div>
                         <div class="col-12">
                             <table class="table table-striped bg-light">
                                 <thead class="table-dark">
@@ -90,6 +106,8 @@ if (isset($_GET['delivered']) && $_GET['delivered']) {
                                                     <span class="fs-5 badge text-bg-info"><?php echo $row['status']; ?></span>
                                                 <?php elseif ($row['status'] == "Cancelled") : ?>
                                                     <span class="fs-5 badge text-bg-danger"><?php echo $row['status']; ?></span>
+                                                <?php elseif ($row['status'] == "Delivered") : ?>
+                                                    <span class="fs-5 badge text-bg-success"><?php echo $row['status']; ?></span>
                                                 <?php endif; ?>
                                             </td>
                                             <td>
@@ -105,9 +123,11 @@ if (isset($_GET['delivered']) && $_GET['delivered']) {
                                                     <?php endif; ?>
 
                                                     <form action="">
-                                                        <button class="btn btn-danger" name="delete" type="submit" value="<?php echo $row['id']; ?>" onclick="return confirm('Are you sure you want to cancel this order?')">
-                                                            Cancel Order
-                                                        </button>
+                                                        <?php if ($row['status'] != "Delivered") : ?>
+                                                            <button class="btn btn-danger" name="delete" type="submit" value="<?php echo $row['id']; ?>" onclick="return confirm('Are you sure you want to cancel this order?')">
+                                                                Cancel Order
+                                                            </button>
+                                                        <?php endif; ?>
                                                     </form>
                                                 </div>
                                             </td>

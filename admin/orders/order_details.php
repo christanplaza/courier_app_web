@@ -1,3 +1,4 @@
+<?php include_once "../check_logged_in.php"; ?>
 <?php
 session_start();
 $_SESSION["currentPage"] = "orders";
@@ -69,6 +70,8 @@ if (isset($_GET['order_id'])) {
                                                 <span class="fs-6 badge text-bg-secondary"><?php echo $order['status']; ?></span>
                                             <?php elseif ($order['status'] == "Ongoing") : ?>
                                                 <span class="fs-6 badge text-bg-info"><?php echo $order['status']; ?></span>
+                                            <?php elseif ($order['status'] == "Delivered") : ?>
+                                                <span class="fs-6 badge text-bg-success"><?php echo $order['status']; ?></span>
                                             <?php endif; ?>
                                         </td>
                                     </tr>
@@ -111,8 +114,10 @@ if (isset($_GET['order_id'])) {
                         </div>
                         <div class="col-12">
                             <div class="flex">
-                                <a href="/courier_app_web/admin/orders/finalize.php?order_id=<?php echo $id; ?>" class="btn btn-success">Assign Driver & Estimate</a>
-                                <a href="#" class="btn btn-danger">Cancel Order</a>
+                                <?php if ($order['status'] != 'Delivered') : ?>
+                                    <a href="/courier_app_web/admin/orders/finalize.php?order_id=<?php echo $id; ?>" class="btn btn-success">Assign Driver & Estimate</a>
+                                    <a href="#" class="btn btn-danger">Cancel Order</a>
+                                <?php endif; ?>
                                 <a href="/courier_app_web/admin/orders.php" class="btn btn-secondary px-4">Back</a>
                             </div>
                         </div>

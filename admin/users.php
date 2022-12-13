@@ -1,3 +1,4 @@
+<?php include_once "check_logged_in.php"; ?>
 <?php
 session_start();
 $_SESSION["currentPage"] = "users";
@@ -91,11 +92,13 @@ if (isset($_GET['delete'])) {
                                                 <a href="/courier_app_web/admin/users/edit.php?id=<?php echo $row['id']; ?>" class="btn btn-warning">
                                                     Edit User
                                                 </a>
-                                                <form action="">
-                                                    <button class="btn btn-danger" name="delete" type="submit" value="<?php echo $row['id']; ?>" onclick="return confirm('Are you sure you want to delete this user?')">
-                                                        Delete User
-                                                    </button>
-                                                </form>
+                                                <?php if ($row['role'] != "admin") : ?>
+                                                    <form action="">
+                                                        <button class="btn btn-danger" name="delete" type="submit" value="<?php echo $row['id']; ?>" onclick="return confirm('Are you sure you want to delete this user?')">
+                                                            Delete User
+                                                        </button>
+                                                    </form>
+                                                <?php endif ?>
                                             </td>
                                         </tr>
                                     <?php endwhile; ?>

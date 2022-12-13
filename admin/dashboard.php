@@ -1,3 +1,5 @@
+<?php include_once "check_logged_in.php"; ?>
+
 <?php
 session_start();
 $_SESSION["currentPage"] = "dashboard";
@@ -20,6 +22,41 @@ $_SESSION["currentPage"] = "dashboard";
             <div class="col">
                 <div class="mt-4">
                     <h1>Dashboard</h1>
+                    <div class="row mt-5">
+                        <div class="col-md-6 col-xl-4">
+                            <div class="card mb-3 widget-content">
+                                <div class="card-body">
+                                    <h3 class="card-title">Today's Booking</h3>
+                                    <h1><?php echo $todayBookings; ?></h1>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xl-4">
+                            <div class="card mb-3 widget-content">
+                                <div class="card-body">
+                                    <h3 class="card-title">Pending</h3>
+                                    <h1><?php echo $pendingBookings; ?></h1>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xl-4">
+                            <div class="card mb-3 widget-content">
+                                <div class="card-body">
+                                    <h3 class="card-title">Cancellations</h3>
+                                    <h1><?php echo $cancelledBookings; ?></h1>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="wrapper">
+                                        <div id="calendar"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
