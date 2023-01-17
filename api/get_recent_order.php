@@ -1,6 +1,7 @@
 <?php
-
 if (!empty($_POST['email']) && !empty($_POST['userKey'])) {
+    date_default_timezone_set('Asia/Singapore');
+    $today = date('Y-m-d');
     $conn = mysqli_connect('localhost', 'root', '', 'courier_app');
 
     $email = $_POST['email'];
@@ -12,9 +13,10 @@ if (!empty($_POST['email']) && !empty($_POST['userKey'])) {
         $res = mysqli_query($conn, $sql);
         if (mysqli_num_rows($res) != 0) {
             $user = mysqli_fetch_assoc($res);
+            $customer_id = $user['id'];
             $data = [];
 
-            $sql = "SELECT `users`.id AS userID, `users`.*, `job_orders`.* FROM job_orders INNER JOIN users ON `job_orders`.customer_id = `users`.id WHERE (status = 'Ongoing' OR status='In Transit');";
+            $sql = "SELECT * FROM job_orders WHERE customer_id = '$customer_id' AND status = 'Delivered' AND date_placed <= '$today' LIMIT 1";
 
             $res = mysqli_query($conn, $sql);
             if ($res) {
@@ -23,7 +25,7 @@ if (!empty($_POST['email']) && !empty($_POST['userKey'])) {
                 }
                 $result = array("status" => "success", "orders" => $data);
             } else {
-                $result = array("status" => "failed", "message" => "$res");
+                $result = array("status" => "failed", "message" => "Something went wrong.");
             }
         } else {
             $result = array("status" => "failed", "message" => "Unauthorized Access");

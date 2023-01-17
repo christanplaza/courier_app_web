@@ -1,29 +1,25 @@
 <?php
-
-if (!empty($_POST['email']) && !empty($_POST['userKey'])) {
+date_default_timezone_set('Asia/Singapore');
+if (!empty($_POST['email']) && !empty($_POST['userKey']) && !empty($_POST['orderID']) && !empty($_POST['status'])) {
     $conn = mysqli_connect('localhost', 'root', '', 'courier_app');
 
     $email = $_POST['email'];
     $userKey = $_POST['userKey'];
+    $orderID = $_POST['orderID'];
+    $status = $_POST['status'];
+    $today = date('Y-m-d H:i');
 
     if ($conn) {
         $sql = "SELECT * FROM users WHERE email = '$email' AND userKey = '$userKey'";
 
         $res = mysqli_query($conn, $sql);
         if (mysqli_num_rows($res) != 0) {
-            $user = mysqli_fetch_assoc($res);
-            $data = [];
+            $sql = "INSERT INTO job_order_status (job_order_id, status, status_message, datetime) VALUES ('$orderID', 'In Transit', '$status', '$today');";
 
-            $sql = "SELECT `users`.id AS userID, `users`.*, `job_orders`.* FROM job_orders INNER JOIN users ON `job_orders`.customer_id = `users`.id WHERE (status = 'Ongoing' OR status='In Transit');";
-
-            $res = mysqli_query($conn, $sql);
-            if ($res) {
-                while ($row = $res->fetch_assoc()) {
-                    $data[] = $row;
-                }
-                $result = array("status" => "success", "orders" => $data);
+            if (mysqli_query($conn, $sql)) {
+                $result = array("status" => "success", "message" => "Status Update Sent");
             } else {
-                $result = array("status" => "failed", "message" => "$res");
+                $result = array("status" => "failed", "message" => "Something went wrong");
             }
         } else {
             $result = array("status" => "failed", "message" => "Unauthorized Access");

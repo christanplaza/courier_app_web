@@ -1,5 +1,7 @@
 <?php include_once "../check_logged_in.php"; ?>
 <?php
+date_default_timezone_set('Asia/Singapore');
+$today = date('Y-m-d');
 session_start();
 $_SESSION["currentPage"] = "orders";
 $host = "localhost";
@@ -8,7 +10,6 @@ $pass = "";
 $db = "courier_app";
 $order = [];
 $drivers = [];
-$today = date('Y-m-d');
 
 if (isset($_GET['order_id'])) {
     $id = $_GET['order_id'];
@@ -28,7 +29,7 @@ if (isset($_GET['order_id'])) {
         if (mysqli_num_rows($res) > 0) {
             while ($row = $res->fetch_assoc()) {
                 $driverId = $row['id'];
-                $sql = "SELECT * FROM job_orders WHERE (courier_id = '$driverId') AND status = 'Ongoing'";
+                $sql = "SELECT * FROM job_orders WHERE (courier_id = '$driverId') AND (status = 'Ongoing' OR status = 'In transit')'";
 
                 $job_order_res = mysqli_query($conn, $sql);
                 if (mysqli_num_rows($job_order_res) == 0) {
@@ -45,8 +46,9 @@ if (isset($_GET['order_id'])) {
         $driver = $drivers[$_POST['driver']];
         $driver_id = $driver['id'];
         $date = $_POST['estimated_date'];
+        $fee = $_POST['delivery_fee'];
 
-        $sql = "UPDATE job_orders SET estimated_time = '$date', courier_id = '$driver_id', status = 'Ongoing' WHERE id = '$id'";
+        $sql = "UPDATE job_orders SET estimated_time = '$date', courier_id = '$driver_id', status = 'Ongoing', delivery_fee = '$fee' WHERE id = '$id'";
 
         if (mysqli_query($conn, $sql)) {
             $_SESSION['msg_type'] = "success";
@@ -132,6 +134,12 @@ if (isset($_GET['order_id'])) {
                                             </div>
                                         </div>
                                     <?php endif; ?>
+                                    <div class="col-12">
+                                        <div class="mb-3">
+                                            <label for="delivery_fee">Delivery Fee</label>
+                                            <input type="number" name="delivery_fee" id="delivery_fee" class="form-control" required>
+                                        </div>
+                                    </div>
                                     <button type="submit" class="btn btn-primary w-100" name="submit">Assign and mark as Ongoing</button>
                                 </form>
                             </div>

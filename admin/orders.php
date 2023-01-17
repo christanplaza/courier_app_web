@@ -15,7 +15,7 @@ if (!isset($_GET['showDelivered'])) {
 }
 
 $conn = mysqli_connect($host, $user, $pass, $db);
-$query = "SELECT `users`.id AS userID, `users`.*, `job_orders`.* FROM job_orders INNER JOIN users ON `job_orders`.customer_id = `users`.id WHERE (status = 'Pending' OR status = 'Ongoing' $optional_sql) ORDER BY date_placed";
+$query = "SELECT `users`.id AS userID, `users`.*, `job_orders`.* FROM job_orders INNER JOIN users ON `job_orders`.customer_id = `users`.id WHERE (status = 'Pending' OR status = 'Ongoing' OR status = 'In Transit' $optional_sql) ORDER BY date_placed";
 
 $result = mysqli_query($conn, $query);
 
@@ -87,7 +87,7 @@ if (isset($_GET['delivered']) && $_GET['delivered']) {
                                 <thead class="table-dark">
                                     <tr>
                                         <th scope="col">Date Placed</th>
-                                        <th scope=" col">Customer Name</th>
+                                        <th scope="col">Customer Name</th>
                                         <th scope="col">Contact Number</th>
                                         <th scope="col">Status</th>
                                         <th scope="col">Actions</th>
@@ -104,6 +104,8 @@ if (isset($_GET['delivered']) && $_GET['delivered']) {
                                                     <span class="fs-5 badge text-bg-secondary"><?php echo $row['status']; ?></span>
                                                 <?php elseif ($row['status'] == "Ongoing") : ?>
                                                     <span class="fs-5 badge text-bg-info"><?php echo $row['status']; ?></span>
+                                                <?php elseif ($row['status'] == "In Transit") : ?>
+                                                    <span class="fs-5 badge text-bg-warning"><?php echo $row['status']; ?></span>
                                                 <?php elseif ($row['status'] == "Cancelled") : ?>
                                                     <span class="fs-5 badge text-bg-danger"><?php echo $row['status']; ?></span>
                                                 <?php elseif ($row['status'] == "Delivered") : ?>
@@ -113,14 +115,6 @@ if (isset($_GET['delivered']) && $_GET['delivered']) {
                                             <td>
                                                 <div class="d-flex flex-wrap gap-2">
                                                     <a href="/courier_app_web/admin/orders/order_details.php?order_id=<?php echo $row['id']; ?>" class="btn btn-primary">View Details</a>
-
-                                                    <?php if ($row['status'] == "Ongoing") : ?>
-                                                        <form action="">
-                                                            <button class="btn btn-success" name="delivered" type="submit" value="<?php echo $row['id']; ?>" onclick="return confirm('Are you sure you want to mark this as Delivered?')">
-                                                                Mark as Delivered
-                                                            </button>
-                                                        </form>
-                                                    <?php endif; ?>
 
                                                     <form action="">
                                                         <?php if ($row['status'] != "Delivered") : ?>

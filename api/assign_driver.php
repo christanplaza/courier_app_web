@@ -8,13 +8,14 @@ if (!empty($_POST['email']) && !empty($_POST['userKey']) && !empty($_POST['date'
     $courier = $_POST['courier'];
     $date = $_POST['date'];
     $orderID = $_POST['orderID'];
+    $deliveryFee = $_POST['delivery_fee'];
 
     if ($conn) {
         $sql = "SELECT * FROM users WHERE email = '$email' AND userKey = '$userKey'";
 
         $res = mysqli_query($conn, $sql);
         if (mysqli_num_rows($res) != 0) {
-            $sql = "UPDATE job_orders SET estimated_time = '$date', courier_id = '$courier', status = 'Ongoing' WHERE id = '$orderID'";
+            $sql = "UPDATE job_orders SET estimated_time = '$date', courier_id = '$courier', status = 'Ongoing', delivery_fee = '$deliveryFee' WHERE id = '$orderID'";
 
             if (mysqli_query($conn, $sql)) {
                 $result = array("status" => "success", "message" => "Order Updated");

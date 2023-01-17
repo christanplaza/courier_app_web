@@ -21,7 +21,7 @@ if (!empty($_POST['email']) && !empty($_POST['userKey'])) {
             if ($res) {
                 while ($row = $res->fetch_assoc()) {
                     $driverId = $row['id'];
-                    $sql = "SELECT * FROM job_orders WHERE (courier_id = '$driverId') AND status = 'Ongoing'";
+                    $sql = "SELECT * FROM job_orders WHERE (courier_id = '$driverId') AND (status = 'Ongoing' OR status = 'In Transit')";
 
                     $job_order_res = mysqli_query($conn, $sql);
                     if (mysqli_num_rows($job_order_res) == 0) {

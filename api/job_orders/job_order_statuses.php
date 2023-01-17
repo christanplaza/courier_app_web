@@ -1,29 +1,29 @@
 <?php
 
-if (!empty($_POST['email']) && !empty($_POST['userKey'])) {
+if (!empty($_POST['email']) && !empty($_POST['userKey']) && !empty($_POST['orderID'])) {
     $conn = mysqli_connect('localhost', 'root', '', 'courier_app');
 
     $email = $_POST['email'];
     $userKey = $_POST['userKey'];
+    $orderID = $_POST['orderID'];
+    $data = [];
 
     if ($conn) {
         $sql = "SELECT * FROM users WHERE email = '$email' AND userKey = '$userKey'";
 
         $res = mysqli_query($conn, $sql);
         if (mysqli_num_rows($res) != 0) {
-            $user = mysqli_fetch_assoc($res);
-            $data = [];
-
-            $sql = "SELECT `users`.id AS userID, `users`.*, `job_orders`.* FROM job_orders INNER JOIN users ON `job_orders`.customer_id = `users`.id WHERE (status = 'Ongoing' OR status='In Transit');";
-
+            // Get all status of particular job order
+            $sql = "SELECT * FROM job_order_status WHERE job_order_id = $orderID ORDER BY datetime DESC";
             $res = mysqli_query($conn, $sql);
             if ($res) {
                 while ($row = $res->fetch_assoc()) {
+                    $date = date_create($row['datetime']);
+                    $row['date'] = date_format($date, "Y-m-d");
+                    $row['time'] = date_format($date, "H:i");
                     $data[] = $row;
                 }
-                $result = array("status" => "success", "orders" => $data);
-            } else {
-                $result = array("status" => "failed", "message" => "$res");
+                $result = array("status" => "success", "status_list" => $data);
             }
         } else {
             $result = array("status" => "failed", "message" => "Unauthorized Access");

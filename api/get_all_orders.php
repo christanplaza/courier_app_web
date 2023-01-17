@@ -18,6 +18,17 @@ if (!empty($_POST['email']) && !empty($_POST['userKey'])) {
             $res = mysqli_query($conn, $sql);
             if ($res) {
                 while ($row = $res->fetch_assoc()) {
+                    // Get latest status
+                    $orderID = $row['id'];
+
+                    $sql = "SELECT * FROM job_order_status WHERE job_order_id = $orderID ORDER BY datetime DESC LIMIT 1";
+                    $res = mysqli_query($conn, $sql);
+
+                    if ($res) {
+                        while ($status_row = $res->fetch_assoc()) {
+                            $row['recent_status'] = $status_row;
+                        }
+                    }
                     $data[] = $row;
                 }
                 $result = array("status" => "success", "orders" => $data);

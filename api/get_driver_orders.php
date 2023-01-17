@@ -14,7 +14,7 @@ if (!empty($_POST['email']) && !empty($_POST['userKey'])) {
             $user = mysqli_fetch_assoc($res);
             $driverID = $user['id'];
 
-            $sql = "SELECT `users`.name, `users`.contact_number, `job_orders`.* FROM job_orders INNER JOIN users ON `job_orders`.customer_id = `users`.id WHERE (courier_id = '$driverID') AND status = 'Ongoing'";
+            $sql = "SELECT `users`.name, `users`.contact_number, `job_orders`.* FROM job_orders INNER JOIN users ON `job_orders`.customer_id = `users`.id WHERE (courier_id = '$driverID') AND (status = 'Ongoing' OR status = 'In Transit');";
 
             $job_order_res = mysqli_query($conn, $sql);
             if (mysqli_num_rows($job_order_res) != 0) {
@@ -34,4 +34,3 @@ if (!empty($_POST['email']) && !empty($_POST['userKey'])) {
 }
 
 echo json_encode($result, JSON_PRETTY_PRINT);
-

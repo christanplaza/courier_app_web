@@ -22,7 +22,7 @@ if ($res) {
     $pendingOrders = mysqli_fetch_assoc($res)['COUNT(*)'];
 }
 
-$sql = "SELECT COUNT(*) FROM job_orders WHERE status = 'Ongoing'";
+$sql = "SELECT COUNT(*) FROM job_orders WHERE (status = 'Ongoing' OR status = 'In Transit')";
 
 $res = mysqli_query($conn, $sql);
 if ($res) {
@@ -35,7 +35,7 @@ $res = mysqli_query($conn, $sql);
 if ($res) {
     while ($row = $res->fetch_assoc()) {
         $driverId = $row['id'];
-        $sql = "SELECT * FROM job_orders WHERE (courier_id = '$driverId') AND status = 'Ongoing'";
+        $sql = "SELECT * FROM job_orders WHERE (courier_id = '$driverId') AND (status = 'Ongoing' OR status = 'In Transit')";
 
         $job_order_res = mysqli_query($conn, $sql);
         if (mysqli_num_rows($job_order_res) == 0) {

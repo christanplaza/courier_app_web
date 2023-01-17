@@ -70,6 +70,8 @@ if (isset($_GET['order_id'])) {
                                                 <span class="fs-6 badge text-bg-secondary"><?php echo $order['status']; ?></span>
                                             <?php elseif ($order['status'] == "Ongoing") : ?>
                                                 <span class="fs-6 badge text-bg-info"><?php echo $order['status']; ?></span>
+                                            <?php elseif ($order['status'] == "In Transit") : ?>
+                                                <span class="fs-6 badge text-bg-warning"><?php echo $order['status']; ?></span>
                                             <?php elseif ($order['status'] == "Delivered") : ?>
                                                 <span class="fs-6 badge text-bg-success"><?php echo $order['status']; ?></span>
                                             <?php endif; ?>
@@ -109,13 +111,34 @@ if (isset($_GET['order_id'])) {
                                             <p><b><?php echo $order['description']; ?></b></p>
                                         </td>
                                     </tr>
+                                    <tr>
+                                        <td>Delivery Fee</td>
+                                        <td>
+                                            <p><b><?php echo $order['delivery_fee']; ?></b></p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Rating</td>
+                                        <td>
+                                            <p><b><?php echo $order['rating']; ?></b></p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Feedback</td>
+                                        <td>
+                                            <p><b><?php echo $order['customer_feedback']; ?></b></p>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
                         <div class="col-12">
                             <div class="flex">
-                                <?php if ($order['status'] != 'Delivered') : ?>
+                                <?php if ($order['status'] == 'Pending') : ?>
                                     <a href="/courier_app_web/admin/orders/finalize.php?order_id=<?php echo $id; ?>" class="btn btn-success">Assign Driver & Estimate</a>
+                                <?php endif; ?>
+                                <?php if ($order['status'] != 'Delivered') : ?>
+
                                     <a href="#" class="btn btn-danger">Cancel Order</a>
                                 <?php endif; ?>
                                 <a href="/courier_app_web/admin/orders.php" class="btn btn-secondary px-4">Back</a>

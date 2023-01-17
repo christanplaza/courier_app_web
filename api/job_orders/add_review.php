@@ -1,29 +1,23 @@
 <?php
-
-if (!empty($_POST['email']) && !empty($_POST['userKey'])) {
+if (!empty($_POST['email']) && !empty($_POST['userKey']) && !empty($_POST['orderID']) && !empty($_POST['feedback']) && !empty($_POST['rating'])) {
     $conn = mysqli_connect('localhost', 'root', '', 'courier_app');
 
     $email = $_POST['email'];
     $userKey = $_POST['userKey'];
+    $feedback = $_POST['feedback'];
+    $rating = $_POST['rating'];
+    $orderID = $_POST['orderID'];
+    $data = [];
 
     if ($conn) {
         $sql = "SELECT * FROM users WHERE email = '$email' AND userKey = '$userKey'";
 
         $res = mysqli_query($conn, $sql);
         if (mysqli_num_rows($res) != 0) {
-            $user = mysqli_fetch_assoc($res);
-            $data = [];
-
-            $sql = "SELECT `users`.id AS userID, `users`.*, `job_orders`.* FROM job_orders INNER JOIN users ON `job_orders`.customer_id = `users`.id WHERE (status = 'Ongoing' OR status='In Transit');";
-
-            $res = mysqli_query($conn, $sql);
-            if ($res) {
-                while ($row = $res->fetch_assoc()) {
-                    $data[] = $row;
-                }
-                $result = array("status" => "success", "orders" => $data);
-            } else {
-                $result = array("status" => "failed", "message" => "$res");
+            // Get all status of particular job order
+            $sql = "UPDATE job_orders SET rating = '$rating', customer_feedback = '$feedback' WHERE id = '$orderID'";
+            if (mysqli_query($conn, $sql)) {
+                $result = array("status" => "success", "message" => "Review Submitted");
             }
         } else {
             $result = array("status" => "failed", "message" => "Unauthorized Access");
