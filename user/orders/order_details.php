@@ -26,6 +26,19 @@ if (isset($_GET['order_id'])) {
             $order['driverNumber'] = $driver['contact_number'];
         }
     }
+
+    $query = "SELECT * from job_order_status WHERE job_order_id = '$id' ORDER BY datetime DESC";
+    $data = [];
+
+    $res = mysqli_query($conn, $query);
+    if ($res) {
+        while ($row = $res->fetch_assoc()) {
+            $date = date_create($row['datetime']);
+            $row['date'] = date_format($date, "Y-m-d");
+            $row['time'] = date_format($date, "H:i");
+            $data[] = $row;
+        }
+    }
 }
 ?>
 
@@ -53,7 +66,7 @@ if (isset($_GET['order_id'])) {
                                 <h1 class="fs-1">Order Details</h1>
                             </div>
                         </div>
-                        <div class="col-12">
+                        <div class="col-8">
                             <table class="table table-striped table-borderless">
                                 <thead>
                                     <tr>
@@ -118,6 +131,30 @@ if (isset($_GET['order_id'])) {
                                             <p><b><?php echo $order['description']; ?></b></p>
                                         </td>
                                     </tr>
+                                    <tr>
+                                        <td>Delivery Fee</td>
+                                        <td>
+                                            <p><b><?php echo $order['delivery_fee']; ?></b></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-4">
+                            <table class="table table-striped table-borderless">
+                                <thead>
+                                    <tr>
+                                        <th>Date and Time</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($data as $row) : ?>
+                                        <tr>
+                                            <td><?php echo $row['date'] . " " . $row['time']; ?></td>
+                                            <td><?php echo $row['status_message']; ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
                                 </tbody>
                             </table>
                         </div>

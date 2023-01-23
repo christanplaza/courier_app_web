@@ -93,6 +93,8 @@ if (isset($_GET['delivered']) && $_GET['delivered']) {
                                                     <span class="fs-5 badge text-bg-secondary"><?php echo $row['status']; ?></span>
                                                 <?php elseif ($row['status'] == "Ongoing") : ?>
                                                     <span class="fs-5 badge text-bg-info"><?php echo $row['status']; ?></span>
+                                                <?php elseif ($row['status'] == "In Transit") : ?>
+                                                    <span class="fs-5 badge text-bg-warning"><?php echo $row['status']; ?></span>
                                                 <?php elseif ($row['status'] == "Cancelled") : ?>
                                                     <span class="fs-5 badge text-bg-danger"><?php echo $row['status']; ?></span>
                                                 <?php elseif ($row['status'] == "Delivered") : ?>

@@ -1,5 +1,6 @@
 <?php
 session_start();
+date_default_timezone_set('Asia/Singapore');
 if (!empty($_POST['description']) && !empty($_POST['pickup_address']) && !empty($_POST['delivery_address']) && !empty($_POST['note'])) {
    $conn = mysqli_connect('localhost', 'root', '', 'courier_app');
 
@@ -15,6 +16,7 @@ if (!empty($_POST['description']) && !empty($_POST['pickup_address']) && !empty(
    $role = 'customer';
    $password = md5('password');
    $result = array();
+   $today = date('Y-m-d H:i');
 
    if ($conn) {
       $sql = "SELECT * FROM users WHERE email = '$email' AND userKey = '$userKey'";
@@ -26,7 +28,17 @@ if (!empty($_POST['description']) && !empty($_POST['pickup_address']) && !empty(
 
          $sql = "INSERT INTO job_orders (customer_id, description, note, status, delivery_address, pickup_address) values ('$customer_id', '$description', '$note', '$status', '$delivery_address', '$pickup_address')";
          if (mysqli_query($conn, $sql)) {
-            $result = array("status" => "success", "message" => "Job Order Created");
+            $id = $conn->insert_id;
+
+            $sql = "INSERT INTO job_order_status (job_order_id, status, status_message, datetime) values ('$id', 'Order Received', 'Order is currently under review.', '$today');";
+            if (mysqli_query($conn, $sql)) {
+               $result = array("status" => "success", "message" => "Job Order Created");
+            } else {
+               $sql = "DELETE FROM job_orders WHERE id = $id";
+               mysqli_query($conn, $sql);
+
+               $result = array("status" => "failed", "message" => "Something went wrong.");
+            }
          } else {
             $result = array("status" => "failed", "message" => "Something went wrong.");
          }

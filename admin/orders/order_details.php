@@ -11,12 +11,25 @@ $order = [];
 if (isset($_GET['order_id'])) {
     $id = $_GET['order_id'];
     $conn = mysqli_connect($host, $user, $pass, $db);
-    $query = $sql = "SELECT `users`.id AS userID, `users`.*, `job_orders`.* FROM job_orders INNER JOIN users ON `job_orders`.customer_id = `users`.id WHERE `job_orders`.id='$id';";
+    $query = "SELECT `users`.id AS userID, `users`.*, `job_orders`.* FROM job_orders INNER JOIN users ON `job_orders`.customer_id = `users`.id WHERE `job_orders`.id='$id';";
 
     $result = mysqli_query($conn, $query) or die($conn->error);
 
     if (mysqli_num_rows($result) != 0) {
         $order = $result->fetch_assoc();
+    }
+
+    $query = "SELECT * from job_order_status WHERE job_order_id = '$id' ORDER BY datetime DESC";
+    $data = [];
+
+    $res = mysqli_query($conn, $query);
+    if ($res) {
+        while ($row = $res->fetch_assoc()) {
+            $date = date_create($row['datetime']);
+            $row['date'] = date_format($date, "Y-m-d");
+            $row['time'] = date_format($date, "H:i");
+            $data[] = $row;
+        }
     }
 }
 
@@ -46,7 +59,7 @@ if (isset($_GET['order_id'])) {
                                 <h1 class="fs-1">Order Details</h1>
                             </div>
                         </div>
-                        <div class="col-12">
+                        <div class="col-8">
                             <table class="table table-striped table-borderless">
                                 <thead>
                                     <tr>
@@ -129,6 +142,24 @@ if (isset($_GET['order_id'])) {
                                             <p><b><?php echo $order['customer_feedback']; ?></b></p>
                                         </td>
                                     </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-4">
+                            <table class="table table-striped table-borderless">
+                                <thead>
+                                    <tr>
+                                        <th>Date and Time</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($data as $row) : ?>
+                                        <tr>
+                                            <td><?php echo $row['date'] . " " . $row['time']; ?></td>
+                                            <td><?php echo $row['status_message']; ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
                                 </tbody>
                             </table>
                         </div>

@@ -32,7 +32,7 @@ if (isset($_GET['order_id'])) {
                 $sql = "SELECT * FROM job_orders WHERE (courier_id = '$driverId') AND (status = 'Ongoing' OR status = 'In transit')'";
 
                 $job_order_res = mysqli_query($conn, $sql);
-                if (mysqli_num_rows($job_order_res) == 0) {
+                if (!$job_order_res || mysqli_num_rows($job_order_res) == 0) {
                     $data[] = $row;
                 }
             }
